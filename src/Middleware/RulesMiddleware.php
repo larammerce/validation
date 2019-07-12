@@ -13,12 +13,12 @@ use Closure;
 
 class RulesMiddleware
 {
-    public function handle(Request $request, Closure $next, string $guard)
+    public function handle(Request $request, Closure $next, string $guard = null)
     {
         $reflective_method = null;
 
         try {
-            $reflective_method = ReflectiveMethod::withAction($request->route()->getActionName())->getMethod();
+            $reflective_method = ReflectiveMethod::withAction($request->route()->getActionName());
         } catch (AnnotationBadActionPassedException $e) {
             return $next($request);
         }
@@ -41,14 +41,12 @@ class RulesMiddleware
         }
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
-            if ($request->needsJson()) {
-                /*return ResponseFactory::jsonResponse(
+            if ($request->wantsJson()) {
+                return response()->json(
                     $validator->messages()->toArray(),
-                    400,
-                    [
-                        "request_data" => $request->all()
-                    ]
-                );*/ } else {
+                    400
+                );
+            } else {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
         }
