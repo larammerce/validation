@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Larammerce\AnnotationParser\{
     ReflectiveMethod,
-    AnnotationNotFoundException
+    AnnotationNotFoundException,
+    AnnotationBadActionPassedException
 };
 use Closure;
 
@@ -14,12 +15,24 @@ class RulesMiddleware
 {
     public function handle(Request $request, Closure $next, string $guard)
     {
-        $reflective_method = ReflectiveMethod::withAction($request->route()->getActionName())->getMethod();
+        $reflective_method = null;
+
         try {
-            $rules = $reflective_method->getAnnotation("rules")->getProperties();
-            if (isset($rules["dynamic_rules"])) {
-                $dynamic_rules = $rules["dynamic_rules"];
-                unset($rules["dynamic_rules"]);
+            $reflective_method = ReflectiveMethod::withAction($request->route()->getActionName())->getMethod();
+        } catch (AnnotationBadActionPassedException $e) {
+            return $next($request);
+        }
+
+        $annotation_name = config("larammerce_validation.annotation_name");
+        $dynamic_rules_key = config("larammerce_validation.dynamic_rules_key");
+
+        try {
+            $rules = $reflective_method->getAnnotation(
+                $annotation_name
+            )->getProperties();
+            if (isset($rules[$dynamic_rules_key])) {
+                $dynamic_rules = $rules[$dynamic_rules_key];
+                unset($rules[$dynamic_rules_key]);
                 $rules = array_merge($rules, $dynamic_rules);
             }
         } catch (AnnotationNotFoundException $e) {
@@ -35,9 +48,8 @@ class RulesMiddleware
                     [
                         "request_data" => $request->all()
                     ]
-                );*/
-            } else {
-                // return redirect()->back()->withErrors($validator)->withInput();
+                );*/ } else {
+                return redirect()->back()->withErrors($validator)->withInput();
             }
         }
         return $next($request);
