@@ -1,5 +1,7 @@
 # Larammerce Validation
 
+[![Build Status](https://travis-ci.org/larammerce/annotation-parser.svg?branch=master)](https://travis-ci.org/larammerce/validation)
+
 A modern validation package for laravel apps, based on laravel validation and `larammerce/annotation-parser` package.
 
 ## Installation
