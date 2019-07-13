@@ -15,7 +15,7 @@ composer require larammerce/validation
 - First you need to publish configuration file for this project.
 
 ```bash
-php artisan vendor:publish --provider="Larammerce\Validation\ValidationService\Provider"
+php artisan vendor:publish --provider="Larammerce\Validation\ValidationServiceProvider"
 ```
 
 - Then customise the config file if needed.
