@@ -2,7 +2,10 @@
 
 namespace Larammerce\Validation\Middleware;
 
-use Illuminate\Http\Request;
+use Illuminate\Http\{
+    Request,
+    Response
+};
 use Illuminate\Support\Facades\Validator;
 use Larammerce\AnnotationParser\{
     ReflectiveMethod,
@@ -11,9 +14,20 @@ use Larammerce\AnnotationParser\{
 };
 use Closure;
 
+/**
+ * @author Arash Khajelou
+ * @link https://github.com/a-khajelou
+ * @package Larammerce\Validation\Middleware
+ */
 class RulesMiddleware
 {
-    public function handle(Request $request, Closure $next, string $guard = null)
+    /**
+     * @param Request $request
+     * @param Closure $next
+     * @param string[] guards
+     * @return Response
+     */
+    public function handle(Request $request, Closure $next, ...$guards): Response
     {
         $reflective_method = null;
 
@@ -23,8 +37,8 @@ class RulesMiddleware
             return $next($request);
         }
 
-        $annotation_name = config("larammerce_validation.annotation_name");
-        $dynamic_rules_key = config("larammerce_validation.dynamic_rules_key");
+        $annotation_name = config("larammerce.validation.annotation_name");
+        $dynamic_rules_key = config("larammerce.validation.dynamic_rules_key");
 
         try {
             $rules = $reflective_method->getAnnotation(
@@ -41,7 +55,8 @@ class RulesMiddleware
         }
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
-            if ($request->wantsJson()) {
+            if ($request->expectsJson()) {
+                //replace this part with Larammerce\Http\ResponseFactory::jsonResponse() method.
                 return response()->json(
                     $validator->messages()->toArray(),
                     400

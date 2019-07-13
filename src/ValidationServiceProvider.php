@@ -4,12 +4,17 @@ namespace Larammerce\Validation;
 
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * @author Arash Khajelou
+ * @link https://github.com/a-khajelou
+ * @package Larammerce\Validation
+ */
 class ValidationServiceProvider extends ServiceProvider
 {
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/config/larammerce_validation.php' => config_path('larammerce_validation.php'),
+            __DIR__ . '/config/larammerce/validation.php' => config_path('larammerce/validation.php'),
         ]);
     }
 
@@ -20,8 +25,8 @@ class ValidationServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        if ($this->app->config->get('larammerce_validation') === null) {
-            $this->app->config->set('larammerce_validation', require __DIR__ . '/config/larammerce_validation.php');
-        }
+        $this->mergeConfigFrom(
+            __DIR__.'/config/larammerce/validation.php', 'larammerce.validation'
+        );
     }
 }
