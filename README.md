@@ -20,7 +20,7 @@ php artisan vendor:publish --provider="Larammerce\Validation\ValidationService\P
 
 ```php
 return [
-    "annotation_name" => "rules", // the rules will be read from @rules annotation.
+    "annotation_name" => "my_rules", // the rules will be read from @my_rules annotation.
     "dynamic_rules_key" => "dynamic_rules" // dynamic rules (described in docs) will be read from dynamic_rules key.
 ];
 ```
@@ -37,15 +37,24 @@ protected $routeMiddleware = [
 
 ```php
 //routes/web.php | routes/api.php file.
+Route::get("/test-route", "App\Http\Controllers\HomeController@main")->middleware("rules");
+```
 
-//single route
-Route::get("admin/profile", function () {
-    //
-})->middleware("rules");
+```php
+//app/Http/Controllers/HomeController.php
+class HomeController extends Controller {
+    /**
+     * @my_rules(title="required", dynamic_rules=App\Http\Controllers\HomeController::dynamicRules(request("title")))
+     */
+    public function main(Request $request){
+        return "Hello";
+    }
 
-
-//group route
-Route::group(["middleware" => ["rules"]], function () {
-    //add other routes.
-});
+    public static function dynamicRules($title){
+        //conditional rules according to passed data.
+        return [
+            $title."_input" => "required"
+        ];
+    }
+}
 ```
