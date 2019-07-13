@@ -3,8 +3,7 @@
 namespace Larammerce\Validation\Middleware;
 
 use Illuminate\Http\{
-    Request,
-    Response
+    Request
 };
 use Illuminate\Support\Facades\Validator;
 use Larammerce\AnnotationParser\{
@@ -12,6 +11,7 @@ use Larammerce\AnnotationParser\{
     AnnotationNotFoundException,
     AnnotationBadActionPassedException
 };
+use Symfony\Component\HttpFoundation\Response;
 use Closure;
 
 /**
