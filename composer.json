@@ -1,8 +1,14 @@
 {
     "name": "larammerce/validation",
     "description": "A request validation package based on laravel validation and larammerce annotation parser.",
+    "keywords": [
+        "library",
+        "larammerce",
+        "validation"
+    ],
     "type": "library",
     "require": {
+        "php": "^7.1.3",
         "larammerce/annotation-parser": "1.*",
         "laravel/framework": "5.8.*"
     },
